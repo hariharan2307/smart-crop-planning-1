@@ -1,5 +1,6 @@
 # Smart Crop Planning
 
+feature/crop-planning-components
 ## Project Idea
 
 Smart Crop Planning is a MERN application intended to help farmers make better-informed crop choices. It will bring together local weather conditions, soil suitability, historical yield information, and market demand to help reduce uncertainty and support productive, profitable farming decisions.
@@ -22,3 +23,11 @@ Smart Crop Planning is a MERN application intended to help farmers make better-i
 Figma Link: https://school-moss-22946873.figma.site/
 
 The public prototype currently demonstrates the farm sign-in and account-creation entry flows. These screens provide the starting point for the planned crop-planning journey.
+
+## Mock UX Design
+
+Figma Link:  
+https://school-moss-22946873.figma.site/
+
+The public prototype currently shows the farm sign-in and account-creation entry flows. The planned crop-planning experience will help farmers make better-informed decisions using weather conditions, soil suitability, historical yields, and market demand.
+ feature/mock-ux-design
