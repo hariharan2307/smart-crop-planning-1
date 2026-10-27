@@ -1,6 +1,7 @@
 export const crops = [
   {
     name: 'Rice',
+    matchScore: 96,
     description: 'A dependable monsoon crop suited to the region.',
     durationDays: { min: 120, max: 150 },
     expectedYieldTonsPerHectare: 4.5,
@@ -11,6 +12,7 @@ export const crops = [
   },
   {
     name: 'Maize',
+    matchScore: 89,
     description: 'Strong local demand with flexible growing conditions.',
     durationDays: { min: 90, max: 110 },
     expectedYieldTonsPerHectare: 5.2,
@@ -21,6 +23,7 @@ export const crops = [
   },
   {
     name: 'Wheat',
+    matchScore: 86,
     description: 'A familiar winter crop with a steady regional market.',
     durationDays: { min: 110, max: 140 },
     expectedYieldTonsPerHectare: 4.1,
@@ -31,6 +34,7 @@ export const crops = [
   },
   {
     name: 'Millet',
+    matchScore: 82,
     description: 'A hardy option that can thrive with less water.',
     durationDays: { min: 75, max: 100 },
     expectedYieldTonsPerHectare: 2.8,
@@ -41,6 +45,7 @@ export const crops = [
   },
   {
     name: 'Chickpea',
+    matchScore: 80,
     description: 'A nutritious pulse suited to cooler growing months.',
     durationDays: { min: 100, max: 120 },
     expectedYieldTonsPerHectare: 1.6,
