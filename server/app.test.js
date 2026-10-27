@@ -16,6 +16,7 @@ function createTestApp({ farmerOverrides = {} } = {}) {
     farmerFindOne: [],
     farmerFindById: [],
     cropPlanFind: [],
+    cropPlanFindOne: [],
     cropPlanCreate: [],
     cropPlanUpdate: [],
     cropPlanDelete: [],
@@ -50,6 +51,14 @@ function createTestApp({ farmerOverrides = {} } = {}) {
       calls.cropPlanFind.push(query)
       return {
         sort: () => ({ lean: async () => [{ _id: planId, cropName: 'Rice' }] }),
+      }
+    },
+    findOne: (query) => {
+      calls.cropPlanFindOne.push(query)
+      return {
+        lean: async () => query._id === planId
+          ? { _id: planId, cropName: 'Rice', farmer: query.farmer }
+          : null,
       }
     },
     create: async (data) => {
@@ -141,6 +150,57 @@ test('reads only the authenticated farmer crop plans from MongoDB', async () => 
   assert.equal(response.status, 200)
   assert.deepEqual(calls.cropPlanFind, [{ farmer: farmerId }])
   assert.equal(response.body.plans[0].cropName, 'Rice')
+})
+
+test('lists crop catalogue entries and filters by season and soil type', async () => {
+  const { app } = createTestApp()
+  const response = await request(app).get('/api/crops?season=Kharif&soilType=Loamy')
+
+  assert.equal(response.status, 200)
+  assert.equal(response.body.count, 3)
+  assert.deepEqual(response.body.crops.map((crop) => crop.name), ['Rice', 'Maize', 'Millet'])
+})
+
+test('rejects invalid crop catalogue filters', async () => {
+  const { app } = createTestApp()
+  const response = await request(app).get('/api/crops?season=Spring')
+
+  assert.equal(response.status, 400)
+  assert.match(response.body.error, /Season must be one of/)
+})
+
+test('reads an individual crop plan scoped to the authenticated farmer', async () => {
+  const { app, calls, token } = createTestApp()
+  const response = await request(app)
+    .get(`/api/crop-plans/${planId}`)
+    .set('Authorization', `Bearer ${token}`)
+
+  assert.equal(response.status, 200)
+  assert.deepEqual(calls.cropPlanFindOne, [{ _id: planId, farmer: farmerId }])
+  assert.equal(response.body.plan.cropName, 'Rice')
+})
+
+test('does not disclose a crop plan that is not owned by the authenticated farmer', async () => {
+  const { app, calls, token } = createTestApp()
+  const response = await request(app)
+    .get('/api/crop-plans/507f1f77bcf86cd799439099')
+    .set('Authorization', `Bearer ${token}`)
+
+  assert.equal(response.status, 404)
+  assert.deepEqual(calls.cropPlanFindOne, [{
+    _id: '507f1f77bcf86cd799439099',
+    farmer: farmerId,
+  }])
+})
+
+test('rejects an invalid crop plan ID before querying MongoDB', async () => {
+  const { app, calls, token } = createTestApp()
+  const response = await request(app)
+    .get('/api/crop-plans/not-an-id')
+    .set('Authorization', `Bearer ${token}`)
+
+  assert.equal(response.status, 400)
+  assert.equal(calls.cropPlanFindOne.length, 0)
 })
 
 test('writes a crop plan scoped to the authenticated farmer', async () => {

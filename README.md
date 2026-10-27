@@ -36,7 +36,9 @@ The Express API connects to MongoDB before it starts listening. Copy `server/.en
 | `POST` | `/api/auth/register` | Create a farmer account and return a bearer token. |
 | `POST` | `/api/auth/login` | Verify a farmer's email/phone and password. |
 | `GET` | `/api/farmers/me` | Read the authenticated farmer profile. |
+| `GET` | `/api/crops?season=Kharif&soilType=Loamy` | List crop suggestions, optionally filtered by season and soil type. |
 | `GET` | `/api/crop-plans` | Read the authenticated farmer's saved plans. |
+| `GET` | `/api/crop-plans/:id` | Read one saved plan owned by the authenticated farmer. |
 | `POST` | `/api/crop-plans` | Save a crop plan for the authenticated farmer. |
 | `PATCH` | `/api/crop-plans/:id/status` | Update a plan status owned by the authenticated farmer. |
 | `DELETE` | `/api/crop-plans/:id` | Delete a plan owned by the authenticated farmer. |
