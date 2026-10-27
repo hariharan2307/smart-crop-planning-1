@@ -3,6 +3,7 @@ import cors from 'cors'
 import express from 'express'
 import jwt from 'jsonwebtoken'
 import mongoose from 'mongoose'
+import { crops } from './data/crops.js'
 import CropPlan from './models/CropPlan.js'
 import Farmer from './models/Farmer.js'
 import { createAuthenticate } from './middleware/authenticate.js'
@@ -53,6 +54,26 @@ export function createApp({
       status: 'ok',
       database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
     })
+  })
+
+  app.get('/api/crops', (request, response) => {
+    const { season, soilType } = request.query
+    const validSeasons = ['Kharif', 'Rabi', 'Zaid']
+    const validSoilTypes = ['Clay', 'Loamy', 'Sandy']
+
+    if (season !== undefined && !validSeasons.includes(season)) {
+      return response.status(400).json({ error: `Season must be one of: ${validSeasons.join(', ')}.` })
+    }
+    if (soilType !== undefined && !validSoilTypes.includes(soilType)) {
+      return response.status(400).json({ error: `Soil type must be one of: ${validSoilTypes.join(', ')}.` })
+    }
+
+    const results = crops.filter((crop) => (
+      (!season || crop.seasons.includes(season))
+      && (!soilType || crop.soilTypes.includes(soilType))
+    ))
+
+    return response.json({ count: results.length, crops: results })
   })
 
   app.post('/api/auth/register', asyncRoute(async (request, response) => {
@@ -117,6 +138,20 @@ export function createApp({
       .lean()
 
     return response.json({ plans })
+  }))
+
+  app.get('/api/crop-plans/:id', authenticate, asyncRoute(async (request, response) => {
+    const { id } = request.params
+    if (!mongoose.isValidObjectId(id)) {
+      return response.status(400).json({ error: 'Crop plan ID is invalid.' })
+    }
+
+    const plan = await cropPlanModel.findOne({ _id: id, farmer: request.farmerId }).lean()
+    if (!plan) {
+      return response.status(404).json({ error: 'Crop plan was not found.' })
+    }
+
+    return response.json({ plan })
   }))
 
   app.post('/api/crop-plans', authenticate, asyncRoute(async (request, response) => {
