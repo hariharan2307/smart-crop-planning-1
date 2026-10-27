@@ -22,3 +22,7 @@ Smart Crop Planning is a MERN application intended to help farmers make better-i
 Figma Link: https://school-moss-22946873.figma.site/
 
 The public prototype currently demonstrates the farm sign-in and account-creation entry flows. These screens provide the starting point for the planned crop-planning journey.
+
+## Backend Data Models
+
+The Mongoose schemas in `server/models` define farmer profiles and crop plans, including contact details, farm conditions, crop season, field size, plan status, and recommendation snapshots. Run `npm install` in `server`, then `npm test` there to validate the schemas without a database connection.
