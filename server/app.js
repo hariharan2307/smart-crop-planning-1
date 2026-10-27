@@ -76,6 +76,44 @@ export function createApp({
     return response.json({ count: results.length, crops: results })
   })
 
+  app.post('/api/crop-recommendations', (request, response) => {
+    const { season, soilType, landSizeAcres } = request.body ?? {}
+    const validSeasons = ['Kharif', 'Rabi', 'Zaid']
+    const validSoilTypes = ['Clay', 'Loamy', 'Sandy']
+
+    if (!validSeasons.includes(season)) {
+      return response.status(400).json({ error: `Season must be one of: ${validSeasons.join(', ')}.` })
+    }
+    if (!validSoilTypes.includes(soilType)) {
+      return response.status(400).json({ error: `Soil type must be one of: ${validSoilTypes.join(', ')}.` })
+    }
+    if (
+      typeof landSizeAcres !== 'number'
+      || !Number.isFinite(landSizeAcres)
+      || landSizeAcres < 0.1
+      || landSizeAcres > 500
+    ) {
+      return response.status(400).json({ error: 'Field size must be a number between 0.1 and 500 acres.' })
+    }
+
+    const recommendations = crops
+      .filter((crop) => crop.seasons.includes(season) && crop.soilTypes.includes(soilType))
+      .map((crop) => ({
+        ...crop,
+        estimatedYieldTons: Number(
+          (crop.expectedYieldTonsPerHectare * landSizeAcres * 0.404686).toFixed(2),
+        ),
+      }))
+      .sort((first, second) => second.matchScore - first.matchScore)
+
+    return response.json({
+      count: recommendations.length,
+      input: { season, soilType, landSizeAcres },
+      recommendations,
+      dataNote: 'Yield estimates are illustrative and can vary with local conditions and farm practices.',
+    })
+  })
+
   app.post('/api/auth/register', asyncRoute(async (request, response) => {
     const { fullName, email, phone, password, farmLocation, farmSizeAcres, soilType } = request.body ?? {}
 

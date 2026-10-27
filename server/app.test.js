@@ -169,6 +169,47 @@ test('rejects invalid crop catalogue filters', async () => {
   assert.match(response.body.error, /Season must be one of/)
 })
 
+test('returns ranked crop recommendations and estimated yield for valid POST input', async () => {
+  const { app } = createTestApp()
+  const response = await request(app)
+    .post('/api/crop-recommendations')
+    .send({ season: 'Kharif', soilType: 'Loamy', landSizeAcres: 2 })
+
+  assert.equal(response.status, 200)
+  assert.deepEqual(response.body.input, {
+    season: 'Kharif',
+    soilType: 'Loamy',
+    landSizeAcres: 2,
+  })
+  assert.equal(response.body.count, 3)
+  assert.deepEqual(
+    response.body.recommendations.map((crop) => crop.name),
+    ['Rice', 'Maize', 'Millet'],
+  )
+  assert.equal(response.body.recommendations[0].estimatedYieldTons, 3.64)
+  assert.match(response.body.dataNote, /illustrative/)
+})
+
+test('validates required crop recommendation input', async () => {
+  const { app } = createTestApp()
+  const response = await request(app)
+    .post('/api/crop-recommendations')
+    .send({ season: 'Spring', soilType: 'Unknown', landSizeAcres: '2' })
+
+  assert.equal(response.status, 400)
+  assert.match(response.body.error, /Season must be one of/)
+})
+
+test('rejects crop recommendation field sizes outside the allowed range', async () => {
+  const { app } = createTestApp()
+  const response = await request(app)
+    .post('/api/crop-recommendations')
+    .send({ season: 'Kharif', soilType: 'Loamy', landSizeAcres: 0 })
+
+  assert.equal(response.status, 400)
+  assert.match(response.body.error, /between 0.1 and 500 acres/)
+})
+
 test('reads an individual crop plan scoped to the authenticated farmer', async () => {
   const { app, calls, token } = createTestApp()
   const response = await request(app)
