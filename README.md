@@ -26,3 +26,19 @@ The public prototype currently demonstrates the farm sign-in and account-creatio
 ## Backend Data Models
 
 The Mongoose schemas in `server/models` define farmer profiles and crop plans, including contact details, farm conditions, crop season, field size, plan status, and recommendation snapshots. Run `npm install` in `server`, then `npm test` there to validate the schemas without a database connection.
+
+### Database API
+
+The Express API connects to MongoDB before it starts listening. Copy `server/.env.example` to `server/.env`, set `MONGO_URI` and a private `JWT_SECRET`, then run `npm install` and `npm run dev` from `server`.
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| `POST` | `/api/auth/register` | Create a farmer account and return a bearer token. |
+| `POST` | `/api/auth/login` | Verify a farmer's email/phone and password. |
+| `GET` | `/api/farmers/me` | Read the authenticated farmer profile. |
+| `GET` | `/api/crop-plans` | Read the authenticated farmer's saved plans. |
+| `POST` | `/api/crop-plans` | Save a crop plan for the authenticated farmer. |
+| `PATCH` | `/api/crop-plans/:id/status` | Update a plan status owned by the authenticated farmer. |
+| `DELETE` | `/api/crop-plans/:id` | Delete a plan owned by the authenticated farmer. |
+
+Protected endpoints require `Authorization: Bearer <token>`. Request bodies are validated by the Mongoose schemas, and password values are hashed before storage. Run `npm test` from `server` for schema and API tests.
