@@ -1,5 +1,6 @@
 # Smart Crop Planning
 
+feature/crop-planning-components
 ## Project Idea
 
 Smart Crop Planning is a MERN application intended to help farmers make better-informed crop choices. It will bring together local weather conditions, soil suitability, historical yield information, and market demand to help reduce uncertainty and support productive, profitable farming decisions.
@@ -23,10 +24,12 @@ Figma Link: https://school-moss-22946873.figma.site/
 
 The public prototype currently demonstrates the farm sign-in and account-creation entry flows. These screens provide the starting point for the planned crop-planning journey.
 
+feature/mongoose-model-schemas
 ## Backend Data Models
 
 The Mongoose schemas in `server/models` define farmer profiles and crop plans, including contact details, farm conditions, crop season, field size, plan status, and recommendation snapshots. Run `npm install` in `server`, then `npm test` there to validate the schemas without a database connection.
 
+ feature/database-read-write-api
 ### Database API
 
 The Express API connects to MongoDB before it starts listening. Copy `server/.env.example` to `server/.env`, set `MONGO_URI` and a private `JWT_SECRET`, then run `npm install` and `npm run dev` from `server`.
@@ -42,3 +45,14 @@ The Express API connects to MongoDB before it starts listening. Copy `server/.en
 | `DELETE` | `/api/crop-plans/:id` | Delete a plan owned by the authenticated farmer. |
 
 Protected endpoints require `Authorization: Bearer <token>`. Request bodies are validated by the Mongoose schemas, and password values are hashed before storage. Run `npm test` from `server` for schema and API tests.
+
+## Mock UX Design
+
+Figma Link:  
+https://school-moss-22946873.figma.site/
+
+The public prototype currently shows the farm sign-in and account-creation entry flows. The planned crop-planning experience will help farmers make better-informed decisions using weather conditions, soil suitability, historical yields, and market demand.
+ feature/mock-ux-design
+ 
+ feature/mock-ux-design
+ feature/mock-ux-design
